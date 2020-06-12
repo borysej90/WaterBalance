@@ -24,8 +24,5 @@ def main():
     bot = ReminderBot(cfg.TOKEN)
     bot.start()
 
-    while True:
-        sleep(1)
-
 if __name__ == "__main__":
     main()

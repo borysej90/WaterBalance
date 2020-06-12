@@ -139,3 +139,6 @@ waterbalanceconfig.py
 
 # test files
 /test
+
+# json data
+users.json
