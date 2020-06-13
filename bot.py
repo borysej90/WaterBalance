@@ -4,7 +4,7 @@ from telegram.ext import (
     MessageHandler, Updater)
 
 import waterbalanceconfig as cfg
-from handlers import start, remind
+from handlers import Start, Remind
 
 
 class ReminderBot:
@@ -12,21 +12,21 @@ class ReminderBot:
 
     def __init__(self, token):
         self._updater = Updater(token, use_context=True)
-        self.dispatcher = self.updater.dispatcher
+        self.dispatcher = self._updater.dispatcher
 
         start_handler = ConversationHandler(
-            entry_points=[CommandHandler('start', start.start)],
+            entry_points=[CommandHandler('start', Start.start)],
             states={
-                ReminderBot.CHOOSE_LANG : [CommandHandler('cancel', start.cancel), MessageHandler(Filters.text, start.choose_lang)]
+                ReminderBot.CHOOSE_LANG : [CommandHandler('cancel', Start.cancel), MessageHandler(Filters.text, Start.choose_lang)]
             },
             fallbacks=[]
         )
         self.dispatcher.add_handler(start_handler)
 
-        remind_handler = CommandHandler('remind', remind.remind, pass_args=True, pass_job_queue=True, pass_user_data=True)
+        remind_handler = CommandHandler('remind', Remind.remind, pass_args=True, pass_job_queue=True, pass_user_data=True)
         self.dispatcher.add_handler(remind_handler)
 
-        stop_handler = CommandHandler('stop', remind.stop, pass_job_queue=True, pass_user_data=True)
+        stop_handler = CommandHandler('stop', Remind.stop, pass_job_queue=True, pass_user_data=True)
         self.dispatcher.add_handler(stop_handler)
 
         help_handler = CommandHandler('help', self._help, pass_user_data=True)
@@ -36,18 +36,18 @@ class ReminderBot:
 
     def start(self):
         print("{INFO] Starting the bot...")
-        self.pool = True
+        self._pool = True
         self._updater.start_polling()
 
 
     def stop(self):
         print("[INFO] Stopping the bot...")
-        self.pool = False
+        self._pool = False
         self._updater.stop()
 
     @property
-    def updater(self):
-        return self._updater
+    def pool(self):
+        return self._pool
 
     def _error(self, update : Update, context : CallbackContext):
         print(f"[ERROR] Update from User @{update.effective_user.username} caused error {context.error}")
