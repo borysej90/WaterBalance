@@ -2,15 +2,14 @@ from telegram import Update
 from telegram.ext import (
     CallbackContext, CommandHandler, ConversationHandler, Dispatcher, Filters,
     MessageHandler, Updater)
+import os
 
-import waterbalanceconfig as cfg
+import languagecfg as cfg
 from handlers import Start, Remind
 from decorators import language
 
 
 class ReminderBot:
-    CHOOSE_LANG = 0
-
     def __init__(self, token):
         self._updater = Updater(token, use_context=True)
         self.dispatcher = self._updater.dispatcher
@@ -18,7 +17,7 @@ class ReminderBot:
         start_handler = ConversationHandler(
             entry_points=[CommandHandler('start', Start.start)],
             states={
-                ReminderBot.CHOOSE_LANG : [CommandHandler('cancel', Start.cancel), MessageHandler(Filters.text, Start.choose_lang)]
+                Start.CHOOSE_LANG : [CommandHandler('cancel', Start.cancel), MessageHandler(Filters.text, Start.choose_lang)]
             },
             fallbacks=[]
         )
@@ -55,4 +54,7 @@ class ReminderBot:
 
     @language
     def _help(self, update : Update, context : CallbackContext, lang):
-        context.bot.send_message(chat_id=update.effective_chat.id, text=cfg.HELP[lang], parse_mode='Markdown')
+        # get environment variable name connected to HELP response text depending on user's language
+        lang_var = cfg.HELP[lang]
+
+        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
