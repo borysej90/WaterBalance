@@ -11,7 +11,7 @@ def remind(update : Update, context : CallbackContext, lang):
     if not context.args:
         due = 30
     else:
-        due = int(context.args[0])
+        due = float(context.args[0])
 
     if 'job' in context.user_data:
         context.user_data['job'].schedule_removal()
@@ -36,20 +36,20 @@ def remind(update : Update, context : CallbackContext, lang):
 def _drink(context : CallbackContext):
     job = context.job
 
-    chat_id, last_remind_msg_id, lang = job.context
+    chat_id, last_remind_msg, lang = job.context
 
 
     # job.context contains (chat_id, last_remind_msg_id, user_lang)
     message = context.bot.send_message(chat_id=chat_id, text=cfg.DRINK[lang])
 
-    if len(job.context[1]) > 0:
+    if len(last_remind_msg) > 0:
         # job.context[1] is a list where the first (and the only) element is last remind msg ID
-        context.bot.delete_message(chat_id=chat_id, message_id=last_remind_msg_id)
+        context.bot.delete_message(chat_id=chat_id, message_id=last_remind_msg[0])
 
         # replace last remind message id with new (actual) one
-        last_remind_msg_id = message.message_id
+        last_remind_msg[0] = message.message_id
     else:
-        last_remind_msg_id.append(message.message_id)
+        last_remind_msg.append(message.message_id)
 
 @language
 def stop(update : Update, context : CallbackContext, lang):
