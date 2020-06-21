@@ -1,7 +1,6 @@
 from telegram import Bot, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import CallbackContext, ConversationHandler
-
-import waterbalanceconfig as cfg
+import os
 
 CHOOSE_LANG = 0
 
@@ -16,11 +15,11 @@ def choose_lang(update : Update, context : CallbackContext):
     message = update.message.text
 
     if message == 'English':
-        resp = cfg.START_EN
+        resp = os.environ['START_EN']
         context.user_data['lang'] = 'en'
         print(f"[U:{update.effective_user.username}] Setting language to EN")
     elif message == 'Русский':
-        resp = cfg.START_RU
+        resp = os.environ['START_RU']
         context.user_data['lang'] = 'ru'
         print(f"[U:{update.effective_user.username}] Setting language to RU")
     else:
