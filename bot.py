@@ -5,6 +5,7 @@ from telegram.ext import (
 
 import waterbalanceconfig as cfg
 from handlers import Start, Remind
+from decorators import language
 
 
 class ReminderBot:
@@ -52,5 +53,6 @@ class ReminderBot:
     def _error(self, update : Update, context : CallbackContext):
         print(f"[ERROR] Update from User @{update.effective_user.username} caused error {context.error}")
 
-    def _help(self, update : Update, context : CallbackContext):
-        context.bot.send_message(chat_id=update.effective_chat.id, text=cfg.HELP[context.user_data['lang']], parse_mode='Markdown')
+    @language
+    def _help(self, update : Update, context : CallbackContext, lang):
+        context.bot.send_message(chat_id=update.effective_chat.id, text=cfg.HELP[lang], parse_mode='Markdown')
