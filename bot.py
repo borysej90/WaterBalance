@@ -5,7 +5,7 @@ from telegram.ext import (
 import os
 
 import languagecfg as cfg
-from handlers import Start, Remind
+from handlers import start, remind
 from decorators import language
 
 
@@ -15,18 +15,18 @@ class ReminderBot:
         self.dispatcher = self._updater.dispatcher
 
         start_handler = ConversationHandler(
-            entry_points=[CommandHandler('start', Start.start)],
+            entry_points=[CommandHandler('start', start.start)],
             states={
-                Start.CHOOSE_LANG : [CommandHandler('cancel', Start.cancel), MessageHandler(Filters.text, Start.choose_lang)]
+                start.CHOOSE_LANG : [CommandHandler('cancel', start.cancel), MessageHandler(Filters.text, start.choose_lang)]
             },
             fallbacks=[]
         )
         self.dispatcher.add_handler(start_handler)
 
-        remind_handler = CommandHandler('remind', Remind.remind, pass_args=True, pass_job_queue=True, pass_user_data=True)
+        remind_handler = CommandHandler('remind', remind.remind, pass_args=True, pass_job_queue=True, pass_user_data=True)
         self.dispatcher.add_handler(remind_handler)
 
-        stop_handler = CommandHandler('stop', Remind.stop, pass_job_queue=True, pass_user_data=True)
+        stop_handler = CommandHandler('stop', remind.stop, pass_job_queue=True, pass_user_data=True)
         self.dispatcher.add_handler(stop_handler)
 
         help_handler = CommandHandler('help', self._help, pass_user_data=True)
