@@ -137,5 +137,5 @@ dmypy.json
 # test files
 /test
 
-# json data
-users.json
+# init env vars
+init.py

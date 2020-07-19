@@ -1,10 +1,10 @@
+import os
 import signal
 import sys
-from multiprocessing import Process
-from time import sleep
-import os
+import time
 
-from bot import ReminderBot
+from bot.bot import ReminderBot
+
 
 def signals_handler(sig, frame):
     print(f"[INFO] Signal {sig} received, stopping the program...")
@@ -18,4 +18,4 @@ bot = ReminderBot(os.environ["TOKEN"])
 bot.start()
 
 while bot.pool:
-    sleep(1)
+    time.sleep(1)

@@ -1,12 +1,13 @@
+import os
+
 from telegram import Update
 from telegram.ext import (
     CallbackContext, CommandHandler, ConversationHandler, Dispatcher, Filters,
     MessageHandler, Updater)
-import os
 
-import languagecfg as cfg
-from handlers import start, remind
-from decorators import language
+from .config import language as cfg
+from .decorators import language
+from .handlers import remind, start
 
 
 class ReminderBot:

@@ -1,10 +1,10 @@
-from telegram import Update
-from telegram.ext import CallbackContext
 import os
 
-from decorators import language
+from telegram import Update
+from telegram.ext import CallbackContext
 
-import languagecfg as cfg
+from ..config import language as cfg
+from ..decorators import language
 
 
 @language
