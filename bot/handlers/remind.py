@@ -8,7 +8,7 @@ from ..decorators import language
 
 
 @language
-def remind(update : Update, context : CallbackContext, lang):
+def remind(update : Update, context : CallbackContext):
     if not context.args:
         due = 30.
     else:
@@ -19,6 +19,8 @@ def remind(update : Update, context : CallbackContext, lang):
 
     if 'last_remind' not in context.user_data:
         context.user_data['last_remind'] = []
+
+    lang = context.user_data['lang']
     
     # get environment variable name connected to REMIND response text depending on user's language
     lang_var = cfg.REMIND[lang]
@@ -56,7 +58,9 @@ def _drink(context : CallbackContext):
         last_remind_msg.append(message.message_id)
 
 @language
-def stop(update : Update, context : CallbackContext, lang):
+def stop(update : Update, context : CallbackContext):
+    lang = context.user_data['lang']
+    
     if 'job' not in context.user_data:
         # get environment variable name connected to STOP_NOT_EXIST response text depending on user's language
         lang_var = cfg.STOP_NOT_EXiST[lang]
