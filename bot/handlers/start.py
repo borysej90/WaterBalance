@@ -3,6 +3,7 @@ from telegram.ext import CallbackContext, ConversationHandler
 import os
 
 CHOOSE_LANG = 0
+LOG_LANG_SUCCESS = "[INFO] [START] Setting language to {} for @{}"
 
 def start(update : Update, context : CallbackContext):
     keyboard = ReplyKeyboardMarkup([['English', 'Русский']], one_time_keyboard=True)
@@ -15,13 +16,18 @@ def choose_lang(update : Update, context : CallbackContext):
     message = update.message.text
 
     if message == 'English':
+        # Get appropriate response from environment variables
         resp = os.environ['START_EN']
+
         context.user_data['lang'] = 'en'
-        print(f"[U:{update.effective_user.username}] Setting language to EN")
+        print(LOG_LANG_SUCCESS.format('EN', update.effective_user.username))
+
     elif message == 'Русский':
+        # Get appropriate response from environment variables
         resp = os.environ['START_RU']
+
         context.user_data['lang'] = 'ru'
-        print(f"[U:{update.effective_user.username}] Setting language to RU")
+        print(LOG_LANG_SUCCESS.format('RU', update.effective_user.username))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text="Invalid language, try it again.")
         return

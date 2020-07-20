@@ -36,7 +36,7 @@ class ReminderBot:
         self.dispatcher.add_error_handler(self._error)
 
     def start(self):
-        print("{INFO] Starting the bot...")
+        print("[INFO] Starting the bot...")
         self._pool = True
         self._updater.start_polling()
 
@@ -51,7 +51,7 @@ class ReminderBot:
         return self._pool
 
     def _error(self, update : Update, context : CallbackContext):
-        print(f"[ERROR] Update from User @{update.effective_user.username} caused error {context.error}")
+        print(f"[ERROR] Update from @{update.effective_user.username} caused error {context.error}")
 
     @language
     def _help(self, update : Update, context : CallbackContext, lang):

@@ -10,7 +10,7 @@ from ..decorators import language
 @language
 def remind(update : Update, context : CallbackContext, lang):
     if not context.args:
-        due = 30
+        due = 30.
     else:
         due = float(context.args[0])
 
@@ -44,12 +44,14 @@ def _drink(context : CallbackContext):
     # job.context contains (chat_id, last_remind_msg_id, user_lang)
     message = context.bot.send_message(chat_id=chat_id, text=os.environ[lang_var])
 
+    # Check if list contains last remind message id
     if len(last_remind_msg) > 0:
         # job.context[1] is a list where the first (and the only) element is last remind msg ID
         context.bot.delete_message(chat_id=chat_id, message_id=last_remind_msg[0])
 
         # replace last remind message id with new (actual) one
         last_remind_msg[0] = message.message_id
+    # if not, add latest remind message id to it
     else:
         last_remind_msg.append(message.message_id)
 
