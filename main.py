@@ -5,14 +5,15 @@ import time
 
 from bot.bot import ReminderBot
 
-
 def signals_handler(sig, frame):
-    print(f"[INFO] Signal {sig} received, stopping the program...")
+    print(f"\n[INFO] Stop signal received, stopping the program...")
     
     bot.stop()
+    sys.exit(1)
 
 print("[INFO] press Ctrl+C to stop the program...")
-signal.signal(signal.SIGINT | signal.SIGTERM, signals_handler)
+signal.signal(signal.SIGINT, signals_handler)
+signal.signal(signal.SIGTERM, signals_handler)
 
 bot = ReminderBot(os.environ["TOKEN"])
 bot.start()
