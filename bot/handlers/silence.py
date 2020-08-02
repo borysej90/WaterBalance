@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import os
 
 from telegram import Update
@@ -57,7 +57,17 @@ def set_start(update: Update, context: CallbackContext):
 
     message = update.message.text
 
-    context.user_data['silence_start'] = message.split(':')
+    # get hours and minutes from user's message
+    time = message.split(':')
+
+    # convert to integers
+    time = [*map(int, time)]
+
+    # if only hours passed than add 0 minutes
+    if len(time) == 1:
+        time.append(0)
+
+    context.user_data['silence_start'] = datetime.time(time[0], time[1])
 
     # get START_SILENCE environment variable name
     lang_var = cfg.START_SILENCE[lang]
@@ -72,7 +82,17 @@ def set_end(update: Update, context: CallbackContext):
 
     message = update.message.text
 
-    context.user_data['silence_end'] = message.split(':')
+    # get hours and minutes from user's message
+    time = message.split(':')
+
+    # convert to integers
+    time = [*map(int, time)]
+
+    # if only hours passed than add 0 minutes
+    if len(time) == 1:
+        time.append(0)
+
+    context.user_data['silence_end'] = datetime.time(time[0], time[1])
 
     # get START_SILENCE environment variable name
     lang_var = cfg.END_SILENCE[lang]
