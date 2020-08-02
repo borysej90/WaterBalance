@@ -108,10 +108,10 @@ def cancel(update : Update, context : CallbackContext):
     # get CANCEL environment variable name
     lang_var = cfg.CANCEL[lang]
 
-    if context.user_data['timezone']:
+    if 'timezone' in context.user_data:
         del context.user_data['timezone']
 
-    if context.user_data['silence_start']:
+    if 'silence_start' in context.user_data:
         del context.user_data['silence_start']
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])

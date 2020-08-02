@@ -39,7 +39,7 @@ def remind(update : Update, context : CallbackContext):
 def _drink(context : CallbackContext):
     job = context.job
 
-    if context.user_data['silence_start']:
+    if 'silence_start' in context.user_data:
         delta = datetime.timedelta(seconds=job.interval)
         if datetime.datetime.utcnow().time() + delta >= context.user_data['silence_start']:
             # remove current Job from Job queue
