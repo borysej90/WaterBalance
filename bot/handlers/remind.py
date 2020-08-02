@@ -46,12 +46,27 @@ def _drink(context : CallbackContext):
 
     if 'silence_start' in user_data:
         delta = datetime.timedelta(seconds=job.interval)
-        if (datetime.datetime.utcnow() + delta).time() >= user_data['silence_start']:
+
+        # get time of next potential reminding
+        next_reminding = (datetime.datetime.utcnow() + delta).time()
+
+        # check if next reminding violates silence_start boundary
+        is_silence = next_reminding >= user_data['silence_start']
+
+        # this if-clause check if boundaries are in the same day, e.g. 12:00-16:00
+        # then we have to check also if we didn't violate silence_end boundary
+        if user_data['silence_start'] < user_data['silence_end']:
+            is_silence = is_silence and next_reminding <= user_data['silence_end']
+
+        if is_silence:
             # remove current Job from Job queue
             user_data['job'].schedule_removal()
 
-            # define when send message after Silence ends
-            first = user_data['silence_end'] + delta
+            # get silence_end boundary
+            se = user_data['silence_end']
+
+            # define when send first message after Silence ends
+            first = (datetime.datetime(2000, 1, 1, se.hour, se.minute) + delta).time()
 
             # create new interval Job after Silence period
             user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first, context=job.context)
