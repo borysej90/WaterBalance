@@ -31,33 +31,38 @@ def remind(update : Update, context : CallbackContext):
     # convert interval into seconds
     due *= 60
 
-    # Job context contains ChatId related to the job, last remind message id (or empty list) and user's language
-    job_context = (update.effective_chat.id, context.user_data['last_remind'], lang)
+    # Job context will be accessed in Job callback and contains:
+    # [+] ChatID
+    # [+] User data dict
+    job_context = (update.effective_chat.id, context.user_data)
 
     context.user_data['job'] = context.job_queue.run_repeating(_drink, due, context=job_context)
 
 def _drink(context : CallbackContext):
     job = context.job
 
-    if 'silence_start' in context.user_data:
+    # job.context contains (chat_id, last_remind_msg_id, user_data)
+    chat_id, user_data = job.context
+
+    if 'silence_start' in user_data:
         delta = datetime.timedelta(seconds=job.interval)
-        if datetime.datetime.utcnow().time() + delta >= context.user_data['silence_start']:
+        if (datetime.datetime.utcnow() + delta).time() >= user_data['silence_start']:
             # remove current Job from Job queue
-            context.user_data['job'].schedule_removal()
+            user_data['job'].schedule_removal()
 
             # define when send message after Silence ends
-            first = context.user_data['silence_end'] + delta
+            first = user_data['silence_end'] + delta
 
             # create new interval Job after Silence period
-            context.user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first, context=job.context)
+            user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first, context=job.context)
             return
 
-    chat_id, last_remind_msg, lang = job.context
+    lang = user_data['lang']
+    last_remind_msg = user_data['last_remind']
 
     # get environment variable name connected to DRINK response text depending on user's language
     lang_var = cfg.DRINK[lang]
 
-    # job.context contains (chat_id, last_remind_msg_id, user_lang)
     message = context.bot.send_message(chat_id=chat_id, text=os.environ[lang_var])
 
     # Check if list contains last remind message id
