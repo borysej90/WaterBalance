@@ -16,7 +16,7 @@ def silence(update: Update, context: CallbackContext):
     # get CALIBRATION environment variable name
     lang_var = cfg.CALIBRATION[lang]
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='MarkdownV2')
 
     return SET_TIMEZONE
 
@@ -29,7 +29,7 @@ def set_timezone(update: Update, context: CallbackContext):
         # get TIMEZONE_ERROR_RESP environment variable name
         lang_var = cfg.TIMEZONE_ERROR[lang]
 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
+        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='MarkdownV2')
         return
 
     # check if user sent wrong time zone
@@ -37,7 +37,7 @@ def set_timezone(update: Update, context: CallbackContext):
         # get TIMEZONE_ERROR environment variable name
         lang_var = cfg.TIMEZONE_ERROR[lang]
 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
+        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='MarkdownV2')
         return
 
     curr_hour = datetime.datetime.utcnow().hour
@@ -47,7 +47,7 @@ def set_timezone(update: Update, context: CallbackContext):
     # get TIMEZONE_OK environment variable name
     lang_var = cfg.TIMEZONE_OK[lang]
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='MarkdownV2')
 
     return SET_START
 
@@ -72,7 +72,7 @@ def set_start(update: Update, context: CallbackContext):
     # get START_SILENCE environment variable name
     lang_var = cfg.START_SILENCE[lang]
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
+    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='MarkdownV2')
 
     return SET_END
 
@@ -97,7 +97,7 @@ def set_end(update: Update, context: CallbackContext):
     # get START_SILENCE environment variable name
     lang_var = cfg.END_SILENCE[lang]
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
+    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='MarkdownV2')
 
     return ConversationHandler.END
 
@@ -108,11 +108,11 @@ def cancel(update : Update, context : CallbackContext):
     # get CANCEL environment variable name
     lang_var = cfg.CANCEL[lang]
 
-    if 'timezone' in context.user_data:
-        del context.user_data['timezone']
+    # if 'timezone' in context.user_data:
+    #     del context.user_data['timezone']
 
-    if 'silence_start' in context.user_data:
-        del context.user_data['silence_start']
+    # if 'silence_start' in context.user_data:
+    #     del context.user_data['silence_start']
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
                             
