@@ -40,7 +40,7 @@ def set_timezone(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
         return
 
-    curr_hour = datetime.utcnow().hour
+    curr_hour = datetime.datetime.utcnow().hour
 
     context.user_data['timezone'] = user_hour - curr_hour
 
