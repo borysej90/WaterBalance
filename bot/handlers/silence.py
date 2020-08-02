@@ -33,7 +33,7 @@ def set_timezone(update: Update, context: CallbackContext):
         return
 
     # check if user sent wrong time zone
-    if user_hour > 13 or user_hour < -12:
+    if user_hour > 23 or user_hour < 0:
         # get TIMEZONE_ERROR environment variable name
         lang_var = cfg.TIMEZONE_ERROR[lang]
 
