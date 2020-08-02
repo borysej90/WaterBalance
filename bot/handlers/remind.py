@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from telegram import Update
@@ -38,6 +39,19 @@ def remind(update : Update, context : CallbackContext):
 def _drink(context : CallbackContext):
     job = context.job
 
+    if context.user_data['silence_start']:
+        delta = datetime.timedelta(seconds=job.interval)
+        if datetime.datetime.utcnow().time() + delta >= context.user_data['silence_start']:
+            # remove current Job from Job queue
+            context.user_data['job'].schedule_removal()
+
+            # define when send message after Silence ends
+            first = context.user_data['silence_end'] + delta
+
+            # create new interval Job after Silence period
+            context.user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first, context=job.context)
+            return
+
     chat_id, last_remind_msg, lang = job.context
 
     # get environment variable name connected to DRINK response text depending on user's language
@@ -75,3 +89,29 @@ def stop(update : Update, context : CallbackContext):
     lang_var = cfg.STOP[lang]
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
+
+
+# def _get_timezone(tz_offset, common_only=True):
+#     # pick one of the timezone collections
+#     timezones = pytz.common_timezones if common_only else pytz.all_timezones
+
+#     # convert the float hours offset to a timedelta
+#     offset_days, offset_seconds = 0, int(tz_offset * 3600)
+#     if offset_seconds < 0:
+#         offset_days = -1
+#         offset_seconds += 24 * 3600
+#     desired_delta = datetime.timedelta(offset_days, offset_seconds)
+
+#     # Loop through the timezones and find any with matching offsets
+#     null_delta = datetime.timedelta(0, 0)
+#     result = ''
+#     for tz_name in timezones:
+#         tz = pytz.timezone(tz_name)
+#         non_dst_offset = getattr(tz, '_transition_info', [[null_delta]])[-1]
+#         if desired_delta == non_dst_offset[0]:
+#             result = tz_name
+#             break
+
+#     result = pytz.timezone(result)
+
+#     return result
