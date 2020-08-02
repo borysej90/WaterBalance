@@ -28,8 +28,8 @@ class ReminderBot:
             entry_points=[CommandHandler('silence', silence.silence)],
             states={
                 silence.SET_TIMEZONE: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.text, silence.set_timezone)],
-                silence.SET_START: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.regex(r'^\d{2}(:\d{2})?'), silence.set_start)],
-                silence.SET_END: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.regex(r'^\d{2}(:\d{2})?'), silence.set_end)]
+                silence.SET_START: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.regex(r'^\d{1,2}(:\d{1,2})?'), silence.set_start)],
+                silence.SET_END: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.regex(r'^\d{1,2}(:\d{1,2})?'), silence.set_end)]
             },
             fallbacks=[]
         )
