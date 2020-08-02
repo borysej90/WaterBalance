@@ -3,7 +3,7 @@ import os
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from config import language as cfg
+from .config import language as cfg
 
 def language(func):
     def wrapper(*args):
