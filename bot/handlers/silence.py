@@ -67,7 +67,9 @@ def set_start(update: Update, context: CallbackContext):
     if len(time) == 1:
         time.append(0)
 
-    context.user_data['silence_start'] = datetime.time(time[0], time[1])
+    delta = context.user_data['timezone']
+
+    context.user_data['silence_start'] = datetime.time(time[0] - delta, time[1])
 
     # get START_SILENCE environment variable name
     lang_var = cfg.START_SILENCE[lang]
@@ -92,7 +94,9 @@ def set_end(update: Update, context: CallbackContext):
     if len(time) == 1:
         time.append(0)
 
-    context.user_data['silence_end'] = datetime.time(time[0], time[1])
+    delta = context.user_data['timezone']
+
+    context.user_data['silence_end'] = datetime.time(time[0] - delta, time[1])
 
     # get START_SILENCE environment variable name
     lang_var = cfg.END_SILENCE[lang]
