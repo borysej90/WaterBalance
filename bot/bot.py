@@ -7,7 +7,7 @@ from telegram.ext import (
 
 from .config import language as cfg
 from .decorators import language
-from .handlers import remind, start
+from .handlers import remind, start, silence
 
 
 class ReminderBot:
@@ -18,11 +18,22 @@ class ReminderBot:
         start_handler = ConversationHandler(
             entry_points=[CommandHandler('start', start.start)],
             states={
-                start.CHOOSE_LANG : [CommandHandler('cancel', start.cancel), MessageHandler(Filters.text, start.choose_lang)]
+                start.CHOOSE_LANG: [CommandHandler('cancel', start.cancel), MessageHandler(Filters.text, start.choose_lang)]
             },
             fallbacks=[]
         )
         self.dispatcher.add_handler(start_handler)
+
+        silence_handler = ConversationHandler(
+            entry_points=[CommandHandler('silence', silence.silence)],
+            states={
+                silence.SET_TIMEZONE: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.text, silence.set_timezone)],
+                silence.SET_START: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.regex(r'^\d{2}(:\d{2})?'), silence.set_start)],
+                silence.SET_END: [CommandHandler('cancel', silence.cancel), MessageHandler(Filters.regex(r'^\d{2}(:\d{2})?'), silence.set_end)]
+            },
+            fallbacks=[]
+        )
+        self.dispatcher.add_handler(silence_handler)
 
         remind_handler = CommandHandler('remind', remind.remind, pass_args=True, pass_job_queue=True, pass_user_data=True)
         self.dispatcher.add_handler(remind_handler)
