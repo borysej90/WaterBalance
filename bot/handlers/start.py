@@ -32,7 +32,7 @@ def choose_lang(update : Update, context : CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id, text="Invalid language, try it again.")
         return
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=resp, reply_markup=ReplyKeyboardRemove(), parse_mode='Markdown')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=resp, reply_markup=ReplyKeyboardRemove(), parse_mode='MarkdownV2')
     return ConversationHandler.END
 
 def cancel(update : Update, context : CallbackContext):
