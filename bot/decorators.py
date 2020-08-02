@@ -25,18 +25,16 @@ def time_format(func):
         message = update.message.text
 
         time = message.split(':')
-        try:
-            time = [*map(int, time)]
-            time_correct = time[0] < 25 and time[0] > -1
+        time = [*map(int, time)]
 
-            if len(time) > 1:
-                time_correct = time_correct and time[1] > -1 and time[1] < 60            
+        time_correct = time[0] < 25 and time[0] > -1
 
-            if time_correct:
-                return func(*args)
-            else:
-                raise ValueError
-        except ValueError:
+        if len(time) > 1:
+            time_correct = time_correct and time[1] > -1 and time[1] < 60            
+
+        if time_correct:
+            return func(*args)
+        else:
             lang = context.user_data['lang']
 
             # get TIME_FORMAT_ERROR environment variable name
