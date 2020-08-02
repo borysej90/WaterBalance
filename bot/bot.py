@@ -41,7 +41,7 @@ class ReminderBot:
         stop_handler = CommandHandler('stop', remind.stop, pass_job_queue=True, pass_user_data=True)
         self.dispatcher.add_handler(stop_handler)
 
-        help_handler = CommandHandler('help', self._help, pass_user_data=True)
+        help_handler = CommandHandler('help', self._help)
         self.dispatcher.add_handler(help_handler)
 
         self.dispatcher.add_error_handler(self._error)
@@ -65,8 +65,10 @@ class ReminderBot:
         print(f"[ERROR] Update from @{update.effective_user.username} caused error {context.error}")
 
     @language
-    def _help(self, update : Update, context : CallbackContext, lang):
+    def _help(self, update : Update, context : CallbackContext):
+        lang = context.user_data['lang']
+
         # get environment variable name connected to HELP response text depending on user's language
         lang_var = cfg.HELP[lang]
 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
+        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='MarkdownV2')
