@@ -9,7 +9,7 @@ from ..decorators import language
 
 
 @language
-def remind(update : Update, context : CallbackContext):
+def remind(update: Update, context: CallbackContext):
     if not context.args:
         due = 30.
     else:
@@ -22,12 +22,12 @@ def remind(update : Update, context : CallbackContext):
         context.user_data['last_remind'] = []
 
     lang = context.user_data['lang']
-    
+
     # get environment variable name connected to REMIND response text depending on user's language
     lang_var = cfg.REMIND[lang]
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var].format(due))
-    
+
     # convert interval into seconds
     due *= 60
 
@@ -38,7 +38,8 @@ def remind(update : Update, context : CallbackContext):
 
     context.user_data['job'] = context.job_queue.run_repeating(_drink, due, context=job_context)
 
-def _drink(context : CallbackContext):
+
+def _drink(context: CallbackContext):
     job = context.job
 
     # job.context contains (chat_id, last_remind_msg_id, user_data)
@@ -69,7 +70,8 @@ def _drink(context : CallbackContext):
             first = (datetime.datetime(2000, 1, 1, se.hour, se.minute) + delta).time()
 
             # create new interval Job after Silence period
-            user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first, context=job.context)
+            user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first,
+                                                               context=job.context)
             return
 
     lang = user_data['lang']
@@ -91,17 +93,18 @@ def _drink(context : CallbackContext):
     else:
         last_remind_msg.append(message.message_id)
 
+
 @language
-def stop(update : Update, context : CallbackContext):
+def stop(update: Update, context: CallbackContext):
     lang = context.user_data['lang']
-    
+
     if 'job' not in context.user_data:
         # get environment variable name connected to STOP_NOT_EXIST response text depending on user's language
         lang_var = cfg.STOP_NOT_EXiST[lang]
 
         context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
         return
-    
+
     context.user_data['job'].schedule_removal()
     del context.user_data['job']
 
@@ -109,7 +112,6 @@ def stop(update : Update, context : CallbackContext):
     lang_var = cfg.STOP[lang]
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
-
 
 # def _get_timezone(tz_offset, common_only=True):
 #     # pick one of the timezone collections

@@ -139,3 +139,6 @@ dmypy.json
 
 # init env vars
 vars
+
+# JetBrains IDE files
+.idea
