@@ -1,16 +1,15 @@
 import os
 import signal
-import sys
-import time
+import threading
 
-from bot.bot import ReminderBot
+from bot import ReminderBot
 
 
 def signals_handler(sig, frame):
     print(f"\n[INFO] Stop signal received, stopping the program...")
-    
+
     bot.stop()
-    sys.exit(1)
+    stop.set()
 
 
 print("[INFO] press Ctrl+C to stop the program...")
@@ -20,5 +19,6 @@ signal.signal(signal.SIGTERM, signals_handler)
 bot = ReminderBot(os.environ["TOKEN"])
 bot.start()
 
-while bot.pool:
-    time.sleep(1)
+stop = threading.Event()
+
+stop.wait()
