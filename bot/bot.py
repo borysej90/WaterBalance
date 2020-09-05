@@ -70,7 +70,7 @@ class ReminderBot:
 
     @language
     def _help(self, update: Update, context: CallbackContext):
-        lang = context.user_data['lang']
+        lang = context.user_data['language']
 
         # get environment variable name connected to HELP response text depending on user's language
         lang_var = cfg.HELP[lang]

@@ -21,7 +21,7 @@ def remind(update: Update, context: CallbackContext):
     if 'last_remind' not in context.user_data:
         context.user_data['last_remind'] = []
 
-    lang = context.user_data['lang']
+    lang = context.user_data['language']
 
     # get environment variable name connected to REMIND response text depending on user's language
     lang_var = cfg.REMIND[lang]
@@ -52,19 +52,19 @@ def _drink(context: CallbackContext):
         next_reminding = (datetime.datetime.utcnow() + delta).time()
 
         # check if next reminding violates silence_start boundary
-        is_silence = next_reminding >= user_data['silence_start']
+        is_silence = next_reminding >= user_data['start_silence']
 
         # this if-clause check if boundaries are in the same day, e.g. 12:00-16:00
         # then we have to check also if we didn't violate silence_end boundary
-        if user_data['silence_start'] < user_data['silence_end']:
-            is_silence = is_silence and next_reminding <= user_data['silence_end']
+        if user_data['start_silence'] < user_data['end_silence']:
+            is_silence = is_silence and next_reminding <= user_data['end_silence']
 
         if is_silence:
             # remove current Job from Job queue
             user_data['job'].schedule_removal()
 
             # get silence_end boundary
-            se = user_data['silence_end']
+            se = user_data['end_silence']
 
             # define when send first message after Silence ends
             first = (datetime.datetime(2000, 1, 1, se.hour, se.minute) + delta).time()
@@ -74,7 +74,7 @@ def _drink(context: CallbackContext):
                                                                context=job.context)
             return
 
-    lang = user_data['lang']
+    lang = user_data['language']
     last_remind_msg = user_data['last_remind']
 
     # get environment variable name connected to DRINK response text depending on user's language
@@ -96,7 +96,7 @@ def _drink(context: CallbackContext):
 
 @language
 def stop(update: Update, context: CallbackContext):
-    lang = context.user_data['lang']
+    lang = context.user_data['language']
 
     if 'job' not in context.user_data:
         # get environment variable name connected to STOP_NOT_EXIST response text depending on user's language

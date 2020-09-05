@@ -21,14 +21,14 @@ def choose_lang(update: Update, context: CallbackContext):
         # Get appropriate response from environment variables
         resp = os.environ['START_EN']
 
-        context.user_data['lang'] = 'en'
+        context.user_data['language'] = 'en'
         print(LOG_LANG_SUCCESS.format('EN', update.effective_user.username))
 
     elif message == 'Русский':
         # Get appropriate response from environment variables
         resp = os.environ['START_RU']
 
-        context.user_data['lang'] = 'ru'
+        context.user_data['language'] = 'ru'
         print(LOG_LANG_SUCCESS.format('RU', update.effective_user.username))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text="Invalid language, try it again.")

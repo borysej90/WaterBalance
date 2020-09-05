@@ -4,11 +4,11 @@ from .config import language as cfg
 
 
 def language(func):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         update = args[-2]
         context = args[-1]
 
-        if 'lang' in context.user_data:
+        if 'language' in context.user_data:
             return func(*args)
         else:
             context.bot.send_message(chat_id=update.effective_chat.id,
@@ -18,7 +18,7 @@ def language(func):
 
 
 def time_format(func):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         update = args[-2]
         context = args[-1]
 
@@ -35,7 +35,7 @@ def time_format(func):
         if time_correct:
             return func(*args)
         else:
-            lang = context.user_data['lang']
+            lang = context.user_data['language']
 
             # get TIME_FORMAT_ERROR environment variable name
             lang_var = cfg.TIME_FORMAT_ERROR[lang]

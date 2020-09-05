@@ -13,7 +13,7 @@ START, END = "start", "end"
 
 @language
 def silence(update: Update, context: CallbackContext):
-    lang = context.user_data['lang']
+    lang = context.user_data['language']
 
     # get CALIBRATION environment variable name
     lang_var = cfg.CALIBRATION[lang]
@@ -24,7 +24,7 @@ def silence(update: Update, context: CallbackContext):
 
 
 def set_timezone(update: Update, context: CallbackContext):
-    lang = context.user_data['lang']
+    lang = context.user_data['language']
 
     try:
         user_hour = int(update.effective_message.text)
@@ -57,7 +57,7 @@ def set_timezone(update: Update, context: CallbackContext):
 
 @time_format
 def set_start(update: Update, context: CallbackContext):
-    lang = context.user_data['lang']
+    lang = context.user_data['language']
 
     _set_boundary(update, context, START)
 
@@ -71,7 +71,7 @@ def set_start(update: Update, context: CallbackContext):
 
 @time_format
 def set_end(update: Update, context: CallbackContext):
-    lang = context.user_data['lang']
+    lang = context.user_data['language']
 
     _set_boundary(update, context, END)
 
@@ -98,11 +98,12 @@ def _set_boundary(update: Update, context: CallbackContext, boundary):
 
     delta = context.user_data['timezone']
 
-    context.user_data[f'silence_{boundary}'] = datetime.time(time[0] - delta, time[1])
+    context.user_data[f'{boundary}_silence'] = datetime.time(time[0] - delta, time[1])
+
 
 @language
-def cancel(update : Update, context : CallbackContext):
-    lang = context.user_data['lang']
+def cancel(update: Update, context: CallbackContext):
+    lang = context.user_data['language']
 
     # get CANCEL environment variable name
     lang_var = cfg.CANCEL[lang]
@@ -114,5 +115,5 @@ def cancel(update : Update, context : CallbackContext):
     #     del context.user_data['silence_start']
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
-                            
+
     return ConversationHandler.END
