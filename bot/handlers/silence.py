@@ -5,7 +5,7 @@ from telegram import Update
 from telegram.ext import CallbackContext, ConversationHandler
 
 from ..config import language as cfg
-from ..decorators import language, time_format
+from ..decorators import make_changes_to, language, time_format
 
 SET_TIMEZONE, SET_START, SET_END = range(0, 3)
 START, END = "start", "end"
@@ -23,6 +23,7 @@ def silence(update: Update, context: CallbackContext):
     return SET_TIMEZONE
 
 
+@make_changes_to('timezone')
 def set_timezone(update: Update, context: CallbackContext):
     lang = context.user_data['language']
 
@@ -56,6 +57,7 @@ def set_timezone(update: Update, context: CallbackContext):
 
 
 @time_format
+@make_changes_to('start_silence')
 def set_start(update: Update, context: CallbackContext):
     lang = context.user_data['language']
 
@@ -70,6 +72,7 @@ def set_start(update: Update, context: CallbackContext):
 
 
 @time_format
+@make_changes_to('end_silence')
 def set_end(update: Update, context: CallbackContext):
     lang = context.user_data['language']
 
@@ -107,12 +110,6 @@ def cancel(update: Update, context: CallbackContext):
 
     # get CANCEL environment variable name
     lang_var = cfg.CANCEL[lang]
-
-    # if 'timezone' in context.user_data:
-    #     del context.user_data['timezone']
-
-    # if 'silence_start' in context.user_data:
-    #     del context.user_data['silence_start']
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
 

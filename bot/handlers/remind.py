@@ -5,10 +5,11 @@ from telegram import Update
 from telegram.ext import CallbackContext
 
 from ..config import language as cfg
-from ..decorators import language
+from ..decorators import make_changes_to, language
 
 
 @language
+@make_changes_to('job')
 def remind(update: Update, context: CallbackContext):
     if not context.args:
         due = 30.
@@ -109,6 +110,7 @@ def _check_silence(start, end: datetime.time, step: int):
 
 
 @language
+@make_changes_to('job')
 def stop(update: Update, context: CallbackContext):
     lang = context.user_data['language']
 

@@ -1,9 +1,11 @@
 import os
+import functools
 
 from .config import language as cfg
 
 
 def language(func):
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         update = args[-2]
         context = args[-1]
@@ -18,6 +20,7 @@ def language(func):
 
 
 def time_format(func):
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         update = args[-2]
         context = args[-1]
@@ -45,3 +48,26 @@ def time_format(func):
             return
 
     return wrapper
+
+
+def make_changes_to(field):
+    """
+    Marks that function made changes to `user_data`.
+    """
+    def inner(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            context = args[-1]
+
+            old_value = context.user_data.get(field, None)
+
+            ret = func(*args, **kwargs)
+
+            if old_value != context.user_data.get(field, None):
+                context.user_data['changed'] = True
+
+            return ret
+
+        return wrapper
+
+    return inner

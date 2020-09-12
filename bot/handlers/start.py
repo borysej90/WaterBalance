@@ -2,6 +2,8 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import CallbackContext, ConversationHandler
 import os
 
+from ..decorators import make_changes_to
+
 CHOOSE_LANG = 0
 LOG_LANG_SUCCESS = "[INFO] [START] Setting language to {} for @{}"
 
@@ -14,6 +16,7 @@ def start(update: Update, context: CallbackContext):
     return CHOOSE_LANG
 
 
+@make_changes_to('language')
 def choose_lang(update: Update, context: CallbackContext):
     message = update.message.text
 
