@@ -18,9 +18,6 @@ def remind(update: Update, context: CallbackContext):
     if 'job' in context.user_data:
         context.user_data['job'].schedule_removal()
 
-    if 'last_remind' not in context.user_data:
-        context.user_data['last_remind'] = []
-
     lang = context.user_data['language']
 
     # get environment variable name connected to REMIND response text depending on user's language
@@ -45,53 +42,70 @@ def _drink(context: CallbackContext):
     # job.context contains (chat_id, last_remind_msg_id, user_data)
     chat_id, user_data = job.context
 
-    if 'silence_start' in user_data:
+    is_silence = False
+    if {'start_silence', 'end_silence'} <= set(user_data):
+        is_silence = _check_silence(user_data['start_silence'], user_data['end_silence'], job.interval)
+
+    if is_silence:
+        # remove current Job from Job queue
+        user_data['job'].schedule_removal()
+
+        # get silence_end boundary
+        end = user_data['end_silence']
+
         delta = datetime.timedelta(seconds=job.interval)
 
-        # get time of next potential reminding
-        next_reminding = (datetime.datetime.utcnow() + delta).time()
+        # define when send first message after Silence ends
+        # NOTE: year, month and day do not matter here
+        first = (datetime.datetime(2000, 1, 1, end.hour, end.minute) + delta).time()
 
-        # check if next reminding violates silence_start boundary
-        is_silence = next_reminding >= user_data['start_silence']
-
-        # this if-clause check if boundaries are in the same day, e.g. 12:00-16:00
-        # then we have to check also if we didn't violate silence_end boundary
-        if user_data['start_silence'] < user_data['end_silence']:
-            is_silence = is_silence and next_reminding <= user_data['end_silence']
-
-        if is_silence:
-            # remove current Job from Job queue
-            user_data['job'].schedule_removal()
-
-            # get silence_end boundary
-            se = user_data['end_silence']
-
-            # define when send first message after Silence ends
-            first = (datetime.datetime(2000, 1, 1, se.hour, se.minute) + delta).time()
-
-            # create new interval Job after Silence period
-            user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first,
-                                                               context=job.context)
-            return
+        # create new interval Job after Silence period
+        user_data['job'] = context.job_queue.run_repeating(_drink, interval=job.interval, first=first,
+                                                           context=job.context)
+        return
 
     lang = user_data['language']
-    last_remind_msg = user_data['last_remind']
 
     # get environment variable name connected to DRINK response text depending on user's language
     lang_var = cfg.DRINK[lang]
 
     message = context.bot.send_message(chat_id=chat_id, text=os.environ[lang_var])
 
-    # Check if list contains last remind message id
-    if len(last_remind_msg) > 0:
-        # job.context[1] is a list where the first (and the only) element is last remind msg ID
-        context.bot.delete_message(chat_id=chat_id, message_id=last_remind_msg[0])
+    # Check if user_data contains last remind message id
+    if 'last_remind' in user_data:
+        context.bot.delete_message(chat_id=chat_id, message_id=user_data['last_remind'])
 
-        # replace last remind message id with new (actual) one
-        last_remind_msg[0] = message.message_id
-    # if not, add latest remind message id to it
-    else:
-        last_remind_msg.append(message.message_id)
+    # create or replace last remind message id with new (actual) one
+    user_data['last_remind'] = message.message_id
+
+
+def _check_silence(start, end: datetime.time, step: int):
+    """
+    Checks whether current time + `step` (in seconds) is in silence period.
+
+    Args:
+         start (datetime.time): Start of silence period.
+         end (datetime.time): End of silence period.
+         step (int): How many seconds from now.
+
+    Returns:
+        bool: True if in silence period, otherwise False.
+    """
+
+    delta = datetime.timedelta(seconds=step)
+
+    # get time of next potential reminding
+    next_reminding = (datetime.datetime.utcnow() + delta).time()
+
+    # check if next reminding violates silence_start boundary
+    is_silence = next_reminding >= start
+
+    # this if-clause check if boundaries are in the same day, e.g. 12:00-16:00
+    # then we have to check also if we violate silence_end boundary
+    if start < end:
+        is_silence = is_silence and next_reminding <= end
+
+    return is_silence
 
 
 @language
@@ -112,28 +126,3 @@ def stop(update: Update, context: CallbackContext):
     lang_var = cfg.STOP[lang]
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
-
-# def _get_timezone(tz_offset, common_only=True):
-#     # pick one of the timezone collections
-#     timezones = pytz.common_timezones if common_only else pytz.all_timezones
-
-#     # convert the float hours offset to a timedelta
-#     offset_days, offset_seconds = 0, int(tz_offset * 3600)
-#     if offset_seconds < 0:
-#         offset_days = -1
-#         offset_seconds += 24 * 3600
-#     desired_delta = datetime.timedelta(offset_days, offset_seconds)
-
-#     # Loop through the timezones and find any with matching offsets
-#     null_delta = datetime.timedelta(0, 0)
-#     result = ''
-#     for tz_name in timezones:
-#         tz = pytz.timezone(tz_name)
-#         non_dst_offset = getattr(tz, '_transition_info', [[null_delta]])[-1]
-#         if desired_delta == non_dst_offset[0]:
-#             result = tz_name
-#             break
-
-#     result = pytz.timezone(result)
-
-#     return result
