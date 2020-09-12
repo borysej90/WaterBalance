@@ -8,11 +8,13 @@ from telegram.ext import (
 from .config import language as cfg
 from .decorators import language
 from .handlers import remind, start, silence
+from .persistence import ApiPersistence
 
 
 class ReminderBot:
     def __init__(self, token):
-        self._updater = Updater(token, use_context=True)
+        pers = ApiPersistence()
+        self._updater = Updater(token, use_context=True, persistence=pers)
         self.dispatcher = self._updater.dispatcher
 
         start_handler = ConversationHandler(
