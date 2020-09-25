@@ -40,10 +40,10 @@ def time_format(func):
         else:
             lang = context.user_data['language']
 
-            # get TIME_FORMAT_ERROR environment variable name
+            # get connected to TIME_FORMAT_ERROR response text depending on user's language
             lang_var = cfg.TIME_FORMAT_ERROR[lang]
 
-            context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var], parse_mode='Markdown')
+            context.bot.send_message(chat_id=update.effective_chat.id, text=lang_var, parse_mode='Markdown')
 
             return
 

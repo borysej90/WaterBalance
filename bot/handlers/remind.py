@@ -21,10 +21,10 @@ def remind(update: Update, context: CallbackContext):
 
     lang = context.user_data['language']
 
-    # get environment variable name connected to REMIND response text depending on user's language
+    # get connected to REMIND response text depending on user's language
     lang_var = cfg.REMIND[lang]
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var].format(due))
+    context.bot.send_message(chat_id=update.effective_chat.id, text=lang_var.format(due))
 
     # convert interval into seconds
     due *= 60
@@ -67,10 +67,10 @@ def _drink(context: CallbackContext):
 
     lang = user_data['language']
 
-    # get environment variable name connected to DRINK response text depending on user's language
+    # get connected to DRINK response text depending on user's language
     lang_var = cfg.DRINK[lang]
 
-    message = context.bot.send_message(chat_id=chat_id, text=os.environ[lang_var])
+    message = context.bot.send_message(chat_id=chat_id, text=lang_var)
 
     # Check if user_data contains last remind message id
     if 'last_remind' in user_data:
@@ -115,16 +115,16 @@ def stop(update: Update, context: CallbackContext):
     lang = context.user_data['language']
 
     if 'job' not in context.user_data:
-        # get environment variable name connected to STOP_NOT_EXIST response text depending on user's language
+        # get  connected to STOP_NOT_EXIST response text depending on user's language
         lang_var = cfg.STOP_NOT_EXiST[lang]
 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
+        context.bot.send_message(chat_id=update.effective_chat.id, text=lang_var)
         return
 
     context.user_data['job'].schedule_removal()
     del context.user_data['job']
 
-    # get environment variable name connected to STOP response text depending on user's language
+    # get connected to STOP response text depending on user's language
     lang_var = cfg.STOP[lang]
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=os.environ[lang_var])
+    context.bot.send_message(chat_id=update.effective_chat.id, text=lang_var)

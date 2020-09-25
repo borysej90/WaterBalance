@@ -3,6 +3,7 @@ from telegram.ext import CallbackContext, ConversationHandler
 import os
 
 from ..decorators import make_changes_to
+from ..config import language as cfg
 
 CHOOSE_LANG = 0
 LOG_LANG_SUCCESS = "[INFO] [START] Setting language to {} for @{}"
@@ -22,14 +23,14 @@ def choose_lang(update: Update, context: CallbackContext):
 
     if message == 'English':
         # Get appropriate response from environment variables
-        resp = os.environ['START_EN']
+        resp = cfg.START['en']
 
         context.user_data['language'] = 'en'
         print(LOG_LANG_SUCCESS.format('EN', update.effective_user.username))
 
     elif message == 'Русский':
         # Get appropriate response from environment variables
-        resp = os.environ['START_RU']
+        resp = cfg.START['ru']
 
         context.user_data['language'] = 'ru'
         print(LOG_LANG_SUCCESS.format('RU', update.effective_user.username))
