@@ -1,4 +1,3 @@
-import os
 import functools
 
 from .config import language as cfg
