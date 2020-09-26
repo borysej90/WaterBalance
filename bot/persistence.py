@@ -43,8 +43,10 @@ class ApiPersistence(BasePersistence):
         for user in result:
             del user['has_reminding']
 
-            if {'start_silence', 'end_silence'} <= set(user):
+            if 'start_silence' in user:
                 user['start_silence'] = datetime.time.fromisoformat(user['start_silence'])
+
+            if 'end_silence' in user:
                 user['end_silence'] = datetime.time.fromisoformat(user['end_silence'])
 
             user_id = user.pop('id')
