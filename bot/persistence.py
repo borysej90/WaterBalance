@@ -74,8 +74,10 @@ class ApiPersistence(BasePersistence):
 
         user = data.copy()
 
-        if {'start_silence', 'end_silence'} <= set(user):
+        if 'start_silence' in user:
             user['start_silence'] = user['start_silence'].isoformat()
+
+        if 'end_silence' in user:
             user['end_silence'] = user['end_silence'].isoformat()
 
         if 'job' in user:
